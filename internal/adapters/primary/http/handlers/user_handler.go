@@ -49,10 +49,10 @@ func (h *UserHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // @Param id path string true "User ID"
 // @Security ApiKeyAuth
 // @Success 200 {object} response.UserResponse
-// @Failure 400 {object} middleware.ErrorResponse
-// @Failure 401 {object} middleware.ErrorResponse
-// @Failure 404 {object} middleware.ErrorResponse
-// @Failure 500 {object} middleware.ErrorResponse
+// @Failure 400 {object} response.ErrorResponse
+// @Failure 401 {object} response.ErrorResponse
+// @Failure 404 {object} response.ErrorResponse
+// @Failure 500 {object} response.ErrorResponse
 // @Router /user/{id} [get]
 func (h *UserHandler) Get(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -68,34 +68,6 @@ func (h *UserHandler) Get(w http.ResponseWriter, r *http.Request) {
 	userID := parts[2]
 
 	user, err := h.userUsecase.Get(ctx, userID)
-	// ///////////////////////////////////////////////////////////////////////
-	//num, _ := strconv.Atoi(userID)
-	//switch num {
-	//case 0:
-	//	e := fmt.Errorf("this is a test validation error")
-	//	err = apperrors.NewValidationError(e.Error(), e)
-	//
-	//case 1:
-	//	e := fmt.Errorf("this is a test Resource not found error")
-	//	err = apperrors.NewNotFoundError(e.Error(), e)
-	//
-	//case 2:
-	//	e := fmt.Errorf("this is a test Unauthorized error")
-	//	err = apperrors.NewUnauthorizedError(e.Error(), e)
-	//
-	//case 3:
-	//	panic("This is a test panic in healthcheck")
-	//
-	//case 10:
-	//	e := apperrors.NewValidationErrors()
-	//	e.AddError("test_field1", "This is a test validation error1")
-	//	e.AddError("test_field2", "This is a test validation error2")
-	//	err = e
-	//
-	//default:
-	//	err = nil
-	//}
-	// ///////////////////////////////////////////////////////////////////////
 	if err != nil {
 		log.Error("Failed to get user", "error", err, "user_id", userID, "request_id", requestID)
 		writeError(w, err)
@@ -116,8 +88,8 @@ func (h *UserHandler) Get(w http.ResponseWriter, r *http.Request) {
 // @Param offset query int false "Offset for pagination" default(0) minimum(0)
 // @Param limit query int false "Limit for pagination" default(10) maximum(100)
 // @Success 200 {object} response.ListUserResponse
-// @Failure 400 {object} middleware.ErrorResponse
-// @Failure 500 {object} middleware.ErrorResponse
+// @Failure 400 {object} response.ErrorResponse
+// @Failure 500 {object} response.ErrorResponse
 // @Router /users [get]
 func (h *UserHandler) List(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()

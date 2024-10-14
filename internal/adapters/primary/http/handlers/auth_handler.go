@@ -40,8 +40,8 @@ func (h *AuthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param request body request.LoginRequest true "Login credentials"
 // @Success 200 {object} response.LoginResponse
-// @Failure 400 {object} middleware.ErrorResponse
-// @Failure 500 {object} middleware.ErrorResponse
+// @Failure 400 {object} response.ErrorResponse
+// @Failure 500 {object} response.ErrorResponse
 // @Router /auth/login [post]
 func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	log := logger.GetLogger()

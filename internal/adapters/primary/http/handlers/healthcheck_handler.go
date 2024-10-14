@@ -27,7 +27,7 @@ func (h *HealthcheckHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // @Tags healthcheck
 // @Produce json
 // @Success 200 {object} map[string]string
-// @Failure 500 {object} middleware.ErrorResponse
+// @Failure 500 {object} response.ErrorResponse
 // @Router /healthcheck [get]
 func (h *HealthcheckHandler) Get(w http.ResponseWriter, _ *http.Request) {
 	// healthcheck

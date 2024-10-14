@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"runtime/debug"
 
+	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/adapters/primary/http/dto/response"
 	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/apperrors"
 	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/infrastructure/logger"
 	"github.com/google/uuid"
@@ -68,7 +69,7 @@ func ErrorHandler() func(http.Handler) http.Handler {
 }
 
 func handleError(rw *ResponseWriter, err error, requestID string) {
-	var response ErrorResponse
+	var res response.ErrorResponse
 	var statusCode int
 
 	switch e := err.(type) {
@@ -81,7 +82,7 @@ func handleError(rw *ResponseWriter, err error, requestID string) {
 				"message": fe.Message,
 			})
 		}
-		response = ErrorResponse{
+		res = response.ErrorResponse{
 			StatusCode: statusCode,
 			Type:       string(apperrors.ErrorTypeValidation),
 			RequestID:  requestID,
@@ -91,7 +92,7 @@ func handleError(rw *ResponseWriter, err error, requestID string) {
 
 	case *apperrors.AppError:
 		statusCode = e.StatusCode
-		response = ErrorResponse{
+		res = response.ErrorResponse{
 			StatusCode: statusCode,
 			Type:       string(e.Type),
 			RequestID:  requestID,
@@ -100,7 +101,7 @@ func handleError(rw *ResponseWriter, err error, requestID string) {
 
 	default:
 		statusCode = http.StatusInternalServerError
-		response = ErrorResponse{
+		res = response.ErrorResponse{
 			StatusCode: statusCode,
 			Type:       string(apperrors.ErrorTypeInternal),
 			RequestID:  requestID,
@@ -110,17 +111,7 @@ func handleError(rw *ResponseWriter, err error, requestID string) {
 
 	rw.Header().Set("Content-Type", "application/json")
 	rw.WriteHeader(statusCode)
-	if err := json.NewEncoder(rw).Encode(response); err != nil {
+	if err := json.NewEncoder(rw).Encode(res); err != nil {
 		logger.GetLogger().Error("Failed to encode error response", "error", err, "request_id", requestID)
 	}
-}
-
-// ErrorResponse represents an error response
-// @Description Error response structure
-type ErrorResponse struct {
-	StatusCode int    `json:"status_code"`
-	Type       string `json:"type"`
-	RequestID  string `json:"request_id"`
-	Message    string `json:"message"`
-	Details    any    `json:"details,omitempty"`
 }

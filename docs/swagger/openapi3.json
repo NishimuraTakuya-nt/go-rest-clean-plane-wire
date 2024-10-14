@@ -29,7 +29,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/middleware.ErrorResponse"
+                  "$ref": "#/components/schemas/response.ErrorResponse"
                 }
               }
             },
@@ -39,7 +39,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/middleware.ErrorResponse"
+                  "$ref": "#/components/schemas/response.ErrorResponse"
                 }
               }
             },
@@ -84,7 +84,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/middleware.ErrorResponse"
+                  "$ref": "#/components/schemas/response.ErrorResponse"
                 }
               }
             },
@@ -126,7 +126,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/middleware.ErrorResponse"
+                  "$ref": "#/components/schemas/response.ErrorResponse"
                 }
               }
             },
@@ -136,7 +136,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/middleware.ErrorResponse"
+                  "$ref": "#/components/schemas/response.ErrorResponse"
                 }
               }
             },
@@ -146,7 +146,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/middleware.ErrorResponse"
+                  "$ref": "#/components/schemas/response.ErrorResponse"
                 }
               }
             },
@@ -156,7 +156,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/middleware.ErrorResponse"
+                  "$ref": "#/components/schemas/response.ErrorResponse"
                 }
               }
             },
@@ -214,7 +214,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/middleware.ErrorResponse"
+                  "$ref": "#/components/schemas/response.ErrorResponse"
                 }
               }
             },
@@ -224,7 +224,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/middleware.ErrorResponse"
+                  "$ref": "#/components/schemas/response.ErrorResponse"
                 }
               }
             },
@@ -241,7 +241,19 @@
   },
   "components": {
     "schemas": {
-      "middleware.ErrorResponse": {
+      "request.LoginRequest": {
+        "description": "LoginRequest is a struct that represents the request of login",
+        "properties": {
+          "password": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "response.ErrorResponse": {
         "description": "Error response structure",
         "properties": {
           "details": {},
@@ -255,18 +267,6 @@
             "type": "integer"
           },
           "type": {
-            "type": "string"
-          }
-        },
-        "type": "object"
-      },
-      "request.LoginRequest": {
-        "description": "LoginRequest is a struct that represents the request of login",
-        "properties": {
-          "password": {
-            "type": "string"
-          },
-          "username": {
             "type": "string"
           }
         },

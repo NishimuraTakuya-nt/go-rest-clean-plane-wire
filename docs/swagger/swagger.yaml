@@ -1,6 +1,14 @@
 basePath: /api/v1
 definitions:
-  middleware.ErrorResponse:
+  request.LoginRequest:
+    description: LoginRequest is a struct that represents the request of login
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  response.ErrorResponse:
     description: Error response structure
     properties:
       details: {}
@@ -11,14 +19,6 @@ definitions:
       status_code:
         type: integer
       type:
-        type: string
-    type: object
-  request.LoginRequest:
-    description: LoginRequest is a struct that represents the request of login
-    properties:
-      password:
-        type: string
-      username:
         type: string
     type: object
   response.ListUserResponse:
@@ -88,11 +88,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/middleware.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/middleware.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
       summary: User login
       tags:
       - authentication
@@ -111,7 +111,7 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/middleware.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
       summary: Health check endpoint
       tags:
       - healthcheck
@@ -136,19 +136,19 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/middleware.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/middleware.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/middleware.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/middleware.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
       security:
       - ApiKeyAuth: []
       summary: Get a user by ID
@@ -182,11 +182,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/middleware.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/middleware.ErrorResponse'
+            $ref: '#/definitions/response.ErrorResponse'
       summary: List users
       tags:
       - user
