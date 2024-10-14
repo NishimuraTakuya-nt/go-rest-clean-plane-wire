@@ -7,7 +7,7 @@ package mockauth
 import (
 	reflect "reflect"
 
-	auth "github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/infrastructure/auth"
+	models "github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/core/domain/models"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -50,10 +50,10 @@ func (mr *MockTokenServiceMockRecorder) GenerateToken(arg0, arg1 interface{}) *g
 }
 
 // ValidateToken mocks base method.
-func (m *MockTokenService) ValidateToken(arg0 string) (*auth.Claims, error) {
+func (m *MockTokenService) ValidateToken(arg0 string) (*models.Claims, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ValidateToken", arg0)
-	ret0, _ := ret[0].(*auth.Claims)
+	ret0, _ := ret[0].(*models.Claims)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

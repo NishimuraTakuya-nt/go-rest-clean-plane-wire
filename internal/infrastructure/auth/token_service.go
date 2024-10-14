@@ -4,23 +4,18 @@ import (
 	"errors"
 	"time"
 
+	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/core/domain/models"
 	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/infrastructure/config"
 	"github.com/golang-jwt/jwt/v5"
 )
 
 type TokenService interface {
 	GenerateToken(userID string, roles []string) (string, error)
-	ValidateToken(tokenString string) (*Claims, error)
+	ValidateToken(tokenString string) (*models.Claims, error)
 }
 
 type tokenService struct {
 	config *config.Config
-}
-
-type Claims struct {
-	UserID string   `json:"user_id"`
-	Roles  []string `json:"roles"`
-	jwt.RegisteredClaims
 }
 
 func NewTokenService(cfg *config.Config) TokenService {
@@ -30,7 +25,7 @@ func NewTokenService(cfg *config.Config) TokenService {
 }
 
 func (s *tokenService) GenerateToken(userID string, roles []string) (string, error) {
-	claims := &Claims{
+	claims := &models.Claims{
 		UserID: userID,
 		Roles:  roles,
 		RegisteredClaims: jwt.RegisteredClaims{
@@ -44,8 +39,8 @@ func (s *tokenService) GenerateToken(userID string, roles []string) (string, err
 	return token.SignedString([]byte(s.config.JWTSecretKey))
 }
 
-func (s *tokenService) ValidateToken(tokenString string) (*Claims, error) {
-	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(_ *jwt.Token) (any, error) {
+func (s *tokenService) ValidateToken(tokenString string) (*models.Claims, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &models.Claims{}, func(_ *jwt.Token) (any, error) {
 		return []byte(s.config.JWTSecretKey), nil
 	})
 
@@ -53,7 +48,7 @@ func (s *tokenService) ValidateToken(tokenString string) (*Claims, error) {
 		return nil, err
 	}
 
-	if claims, ok := token.Claims.(*Claims); ok && token.Valid {
+	if claims, ok := token.Claims.(*models.Claims); ok && token.Valid {
 		return claims, nil
 	}
 
