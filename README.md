@@ -4,15 +4,10 @@ base project for go rest api
 ## ライブラリの検討
 - wire を実装する
 
-## todo
 ### README に載せたい情報
 - swagger の使い方
 - mock generator の使い方
 - wire の使い方
-
-### その他
-- swagger gen code
-- 
 
 ## このプロジェクトは以下のディレクトリ構造に基づいています：
 ```
