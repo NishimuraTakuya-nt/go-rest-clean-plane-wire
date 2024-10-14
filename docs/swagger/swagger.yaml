@@ -1,17 +1,5 @@
 basePath: /api/v1
 definitions:
-  handlers.LoginRequest:
-    properties:
-      password:
-        type: string
-      username:
-        type: string
-    type: object
-  handlers.LoginResponse:
-    properties:
-      token:
-        type: string
-    type: object
   middleware.ErrorResponse:
     description: Error response structure
     properties:
@@ -23,6 +11,14 @@ definitions:
       status_code:
         type: integer
       type:
+        type: string
+    type: object
+  request.LoginRequest:
+    description: LoginRequest is a struct that represents the request of login
+    properties:
+      password:
+        type: string
+      username:
         type: string
     type: object
   response.ListUserResponse:
@@ -38,6 +34,12 @@ definitions:
         items:
           $ref: '#/definitions/response.UserResponse'
         type: array
+    type: object
+  response.LoginResponse:
+    description: LoginResponse is a struct that represents the response of login
+    properties:
+      token:
+        type: string
     type: object
   response.UserResponse:
     description: User account information
@@ -75,14 +77,14 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/handlers.LoginRequest'
+          $ref: '#/definitions/request.LoginRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handlers.LoginResponse'
+            $ref: '#/definitions/response.LoginResponse'
         "400":
           description: Bad Request
           schema:
@@ -94,6 +96,25 @@ paths:
       summary: User login
       tags:
       - authentication
+  /healthcheck:
+    get:
+      description: Get the health status of the API
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/middleware.ErrorResponse'
+      summary: Health check endpoint
+      tags:
+      - healthcheck
   /user/{id}:
     get:
       consumes:
@@ -116,6 +137,10 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/middleware.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/middleware.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -124,6 +149,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/middleware.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
       summary: Get a user by ID
       tags:
       - user
@@ -163,4 +190,9 @@ paths:
       summary: List users
       tags:
       - user
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

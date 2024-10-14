@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/NishimuraTakuya-nt/go-rest-clean-plane/internal/apperrors"
-	"github.com/NishimuraTakuya-nt/go-rest-clean-plane/internal/infrastructure/logger"
+	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/apperrors"
+	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/infrastructure/logger"
 )
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {

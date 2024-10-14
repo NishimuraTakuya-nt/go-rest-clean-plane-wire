@@ -1,4 +1,4 @@
-module github.com/NishimuraTakuya-nt/go-rest-clean-plane
+module github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire
 
 go 1.23.0
 
@@ -6,6 +6,7 @@ require (
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/golang/mock v1.6.0
 	github.com/google/uuid v1.6.0
+	github.com/google/wire v0.6.0
 	github.com/stretchr/testify v1.9.0
 	github.com/swaggo/http-swagger v1.3.4
 	github.com/swaggo/swag v1.16.3

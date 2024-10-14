@@ -8,7 +8,7 @@ import (
 	context "context"
 	reflect "reflect"
 
-	models "github.com/NishimuraTakuya-nt/go-rest-clean-plane/internal/core/domain/models"
+	models "github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/core/domain/models"
 	gomock "github.com/golang/mock/gomock"
 )
 

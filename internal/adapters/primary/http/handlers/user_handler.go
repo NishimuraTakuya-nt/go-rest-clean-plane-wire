@@ -5,20 +5,20 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/NishimuraTakuya-nt/go-rest-clean-plane/internal/adapters/primary/http/dto/response"
-	"github.com/NishimuraTakuya-nt/go-rest-clean-plane/internal/adapters/primary/http/middleware"
-	"github.com/NishimuraTakuya-nt/go-rest-clean-plane/internal/apperrors"
-	"github.com/NishimuraTakuya-nt/go-rest-clean-plane/internal/core/usecases"
-	"github.com/NishimuraTakuya-nt/go-rest-clean-plane/internal/infrastructure/logger"
+	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/adapters/primary/http/dto/response"
+	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/adapters/primary/http/middleware"
+	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/apperrors"
+	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/core/usecases"
+	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/infrastructure/logger"
 )
 
 type UserHandler struct {
-	userUseCase usecases.UserUseCase
+	userUsecase usecases.UserUsecase
 }
 
-func NewUserHandler(userUseCase usecases.UserUseCase) *UserHandler {
+func NewUserHandler(userUsecase usecases.UserUsecase) *UserHandler {
 	return &UserHandler{
-		userUseCase: userUseCase,
+		userUsecase: userUsecase,
 	}
 }
 
@@ -47,8 +47,10 @@ func (h *UserHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // @Accept  json
 // @Produce  json
 // @Param id path string true "User ID"
+// @Security ApiKeyAuth
 // @Success 200 {object} response.UserResponse
 // @Failure 400 {object} middleware.ErrorResponse
+// @Failure 401 {object} middleware.ErrorResponse
 // @Failure 404 {object} middleware.ErrorResponse
 // @Failure 500 {object} middleware.ErrorResponse
 // @Router /user/{id} [get]
@@ -65,7 +67,7 @@ func (h *UserHandler) Get(w http.ResponseWriter, r *http.Request) {
 	}
 	userID := parts[2]
 
-	user, err := h.userUseCase.Get(ctx, userID)
+	user, err := h.userUsecase.Get(ctx, userID)
 	// ///////////////////////////////////////////////////////////////////////
 	//num, _ := strconv.Atoi(userID)
 	//switch num {
@@ -131,7 +133,7 @@ func (h *UserHandler) List(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// ユーザーリストの取得
-	users, err := h.userUseCase.List(ctx, offset, limit)
+	users, err := h.userUsecase.List(ctx, offset, limit)
 	if err != nil {
 		log.Error("Failed to get user list", "error", err, "request_id", requestID)
 		writeError(w, err)

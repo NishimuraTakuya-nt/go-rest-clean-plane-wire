@@ -5,10 +5,9 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/NishimuraTakuya-nt/go-rest-clean-plane/internal/apperrors"
-	"github.com/NishimuraTakuya-nt/go-rest-clean-plane/internal/core/domain/models"
-	"github.com/NishimuraTakuya-nt/go-rest-clean-plane/internal/infrastructure/auth"
-	"github.com/NishimuraTakuya-nt/go-rest-clean-plane/internal/infrastructure/logger"
+	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/apperrors"
+	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/core/usecases"
+	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/infrastructure/logger"
 )
 
 var UserKey = struct{}{}
@@ -20,7 +19,7 @@ var excludedPaths = []string{
 	"/docs/swagger/",
 }
 
-func Authenticate(tokenService auth.TokenService) Middleware {
+func Authenticate(authUsecase usecases.AuthUsecase) Middleware {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			log := logger.GetLogger()
@@ -54,16 +53,11 @@ func Authenticate(tokenService auth.TokenService) Middleware {
 			}
 
 			tokenString := authHeader[7:]
-			claims, err := tokenService.ValidateToken(tokenString)
+			user, err := authUsecase.Authenticate(tokenString)
 			if err != nil {
 				log.Error("Token validation failed", "error", err)
 				rw.WriteError(apperrors.NewUnauthorizedError("Invalid or expired token", nil))
 				return
-			}
-
-			user := &models.User{
-				ID:    claims.UserID,
-				Roles: claims.Roles,
 			}
 
 			// nolint:staticcheck

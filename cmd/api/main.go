@@ -10,14 +10,9 @@ import (
 	"syscall"
 	"time"
 
-	_ "github.com/NishimuraTakuya-nt/go-rest-clean-plane/docs/swagger"
-	"github.com/NishimuraTakuya-nt/go-rest-clean-plane/internal/adapters/secondary/piyographql"
-
-	"github.com/NishimuraTakuya-nt/go-rest-clean-plane/internal/adapters/primary/http/routes"
-	"github.com/NishimuraTakuya-nt/go-rest-clean-plane/internal/core/usecases"
-	"github.com/NishimuraTakuya-nt/go-rest-clean-plane/internal/infrastructure/auth"
-	"github.com/NishimuraTakuya-nt/go-rest-clean-plane/internal/infrastructure/config"
-	"github.com/NishimuraTakuya-nt/go-rest-clean-plane/internal/infrastructure/logger"
+	_ "github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/docs/swagger"
+	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/infrastructure/config"
+	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/infrastructure/logger"
 )
 
 // @title Go REST Clean API
@@ -25,6 +20,9 @@ import (
 // @description This is a sample server for a Go REST API using clean architecture.
 // @host localhost:8081
 // @BasePath /api/v1
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name Authorization
 func main() {
 	if err := run(); err != nil {
 		logger.GetLogger().Error("Application failed to run", "error", err)
@@ -36,11 +34,10 @@ func run() error {
 	log := logger.GetLogger()
 	cfg := config.Load()
 
-	tokenService := auth.NewTokenService(cfg.JWTSecretKey)
-	graphQLClient := piyographql.NewClient()
-	userUseCase := usecases.NewUserUseCase(graphQLClient)
-
-	router := routes.SetupRouter(cfg, tokenService, userUseCase)
+	router, err := InitializeAPI(cfg)
+	if err != nil {
+		return err
+	}
 
 	srv := &http.Server{
 		Addr:    cfg.ServerAddress,

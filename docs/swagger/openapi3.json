@@ -19,7 +19,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/handlers.LoginResponse"
+                  "$ref": "#/components/schemas/response.LoginResponse"
                 }
               }
             },
@@ -54,7 +54,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/handlers.LoginRequest"
+                "$ref": "#/components/schemas/request.LoginRequest"
               }
             }
           },
@@ -62,6 +62,40 @@
           "required": true
         },
         "summary": "User login"
+      }
+    },
+    "/healthcheck": {
+      "get": {
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/middleware.ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "tags": [
+          "healthcheck"
+        ],
+        "description": "Get the health status of the API",
+        "summary": "Health check endpoint"
       }
     },
     "/user/{id}": {
@@ -98,6 +132,16 @@
             },
             "description": "Bad Request"
           },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/middleware.ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
           "404": {
             "content": {
               "application/json": {
@@ -119,6 +163,11 @@
             "description": "Internal Server Error"
           }
         },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
         "tags": [
           "user"
         ],
@@ -192,25 +241,6 @@
   },
   "components": {
     "schemas": {
-      "handlers.LoginRequest": {
-        "properties": {
-          "password": {
-            "type": "string"
-          },
-          "username": {
-            "type": "string"
-          }
-        },
-        "type": "object"
-      },
-      "handlers.LoginResponse": {
-        "properties": {
-          "token": {
-            "type": "string"
-          }
-        },
-        "type": "object"
-      },
       "middleware.ErrorResponse": {
         "description": "Error response structure",
         "properties": {
@@ -225,6 +255,18 @@
             "type": "integer"
           },
           "type": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "request.LoginRequest": {
+        "description": "LoginRequest is a struct that represents the request of login",
+        "properties": {
+          "password": {
+            "type": "string"
+          },
+          "username": {
             "type": "string"
           }
         },
@@ -247,6 +289,15 @@
               "$ref": "#/components/schemas/response.UserResponse"
             },
             "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "response.LoginResponse": {
+        "description": "LoginResponse is a struct that represents the response of login",
+        "properties": {
+          "token": {
+            "type": "string"
           }
         },
         "type": "object"
@@ -277,6 +328,13 @@
           }
         },
         "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "in": "header",
+        "name": "Authorization",
+        "type": "apiKey"
       }
     }
   }

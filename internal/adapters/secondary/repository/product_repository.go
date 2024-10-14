@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 
-	"github.com/NishimuraTakuya-nt/go-rest-clean-plane/internal/core/domain/models"
+	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/core/domain/models"
 )
 
 type ProductRepository interface {

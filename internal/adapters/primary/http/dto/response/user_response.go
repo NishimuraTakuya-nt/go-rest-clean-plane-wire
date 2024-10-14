@@ -3,7 +3,7 @@ package response
 import (
 	"time"
 
-	"github.com/NishimuraTakuya-nt/go-rest-clean-plane/internal/core/domain/models"
+	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/core/domain/models"
 )
 
 // UserResponse は基本的なユーザー情報を表す構造体です

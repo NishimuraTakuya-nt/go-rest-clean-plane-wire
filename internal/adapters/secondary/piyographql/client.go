@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	"github.com/NishimuraTakuya-nt/go-rest-clean-plane/internal/core/domain/models"
-	"github.com/NishimuraTakuya-nt/go-rest-clean-plane/internal/infrastructure/logger"
+	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/core/domain/models"
+	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/infrastructure/logger"
 )
 
 type Client interface {

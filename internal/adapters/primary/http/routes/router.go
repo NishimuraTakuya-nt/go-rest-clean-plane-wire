@@ -3,20 +3,23 @@ package routes
 import (
 	"net/http"
 
+	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/core/usecases"
 	httpSwagger "github.com/swaggo/http-swagger"
 
-	"github.com/NishimuraTakuya-nt/go-rest-clean-plane/internal/adapters/primary/http/handlers"
-	"github.com/NishimuraTakuya-nt/go-rest-clean-plane/internal/adapters/primary/http/middleware"
-	v1 "github.com/NishimuraTakuya-nt/go-rest-clean-plane/internal/adapters/primary/http/routes/v1"
-	"github.com/NishimuraTakuya-nt/go-rest-clean-plane/internal/core/usecases"
-	"github.com/NishimuraTakuya-nt/go-rest-clean-plane/internal/infrastructure/auth"
-	"github.com/NishimuraTakuya-nt/go-rest-clean-plane/internal/infrastructure/config"
+	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/adapters/primary/http/handlers"
+	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/adapters/primary/http/middleware"
+	v1 "github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/adapters/primary/http/routes/v1"
+	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/infrastructure/config"
 )
 
-func SetupRouter(
+func NewRouter(
 	cfg *config.Config,
-	tokenService auth.TokenService,
-	userUseCase usecases.UserUseCase,
+	authUsecase usecases.AuthUsecase,
+	healthcheckRouter *v1.HealthcheckRouter,
+	authRouter *v1.AuthRouter,
+	userRouter *v1.UserRouter,
+	productRouter *v1.ProductRouter,
+	orderRouter *v1.OrderRouter,
 ) http.Handler {
 	mux := http.NewServeMux()
 
@@ -36,12 +39,11 @@ func SetupRouter(
 	apiV1 := http.NewServeMux()
 	mux.Handle("/api/v1/", http.StripPrefix("/api/v1", apiV1))
 
-	v1.SetupHealthcheckRoutes(apiV1)
-	v1.SetupAuthRoutes(apiV1, tokenService)
-
-	v1.SetupUserRoutes(apiV1, userUseCase)
-	v1.SetupProductRoutes(apiV1)
-	v1.SetupOrderRoutes(apiV1)
+	healthcheckRouter.SetupHealthcheckRoutes(apiV1)
+	authRouter.SetupAuthRoutes(apiV1)
+	userRouter.SetupUserRoutes(apiV1)
+	productRouter.SetupProductRoutes(apiV1)
+	orderRouter.SetupOrderRoutes(apiV1)
 
 	// CORSの設定
 	corsConfig := middleware.DefaultCORSConfig()
@@ -53,7 +55,7 @@ func SetupRouter(
 		middleware.CORS(corsConfig),
 		middleware.Logging(),
 		middleware.ErrorHandler(),
-		//middleware.Authenticate(tokenService), // fix 面倒なので一旦OFF
+		middleware.Authenticate(authUsecase), // fix 面倒なので一旦OFF
 	)
 	return handler
 }

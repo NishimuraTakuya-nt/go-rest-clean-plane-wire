@@ -4,6 +4,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/infrastructure/config"
 	"github.com/golang-jwt/jwt/v5"
 )
 
@@ -13,7 +14,7 @@ type TokenService interface {
 }
 
 type tokenService struct {
-	secretKey []byte
+	config *config.Config
 }
 
 type Claims struct {
@@ -22,8 +23,10 @@ type Claims struct {
 	jwt.RegisteredClaims
 }
 
-func NewTokenService(secretKey string) TokenService {
-	return &tokenService{secretKey: []byte(secretKey)}
+func NewTokenService(cfg *config.Config) TokenService {
+	return &tokenService{
+		config: cfg,
+	}
 }
 
 func (s *tokenService) GenerateToken(userID string, roles []string) (string, error) {
@@ -38,12 +41,12 @@ func (s *tokenService) GenerateToken(userID string, roles []string) (string, err
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString(s.secretKey)
+	return token.SignedString([]byte(s.config.JWTSecretKey))
 }
 
 func (s *tokenService) ValidateToken(tokenString string) (*Claims, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(_ *jwt.Token) (any, error) {
-		return s.secretKey, nil
+		return []byte(s.config.JWTSecretKey), nil
 	})
 
 	if err != nil {

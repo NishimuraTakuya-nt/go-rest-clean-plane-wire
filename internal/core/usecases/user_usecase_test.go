@@ -6,8 +6,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/NishimuraTakuya-nt/go-rest-clean-plane/internal/core/domain/models"
-	"github.com/NishimuraTakuya-nt/go-rest-clean-plane/internal/mocks/mockpiyographql"
+	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/core/domain/models"
+	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/mocks/mockpiyographql"
 	"github.com/golang/mock/gomock"
 )
 
@@ -44,12 +44,12 @@ func Test_lenID(t *testing.T) {
 	}
 }
 
-func TestUserUseCase(t *testing.T) {
+func TestUserUsecase(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
 	mockClient := mockpiyographql.NewMockClient(ctrl)
-	target := NewUserUseCase(mockClient)
+	target := NewUserUsecase(mockClient)
 
 	t.Run("get user", func(t *testing.T) {
 		ID := "123"

@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/NishimuraTakuya-nt/go-rest-clean-plane/internal/infrastructure/logger"
+	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/infrastructure/logger"
 )
 
 // Logging logs details of each HTTP request

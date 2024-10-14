@@ -1,4 +1,4 @@
-.PHONY: lint lint-fix test build up clean swagger help
+.PHONY: lint lint-fix test build up clean wire swagger generate-mocks help
 
 NAME := go-rest-clean-plane
 DC := docker compose
@@ -25,11 +25,13 @@ clean: ## Clean up
 	docker system prune -f
 
 ## Generate ##
+wire: ## Generate wire
+	wire ./cmd/api
+
 swagger: ## Generate swagger
 	swag init -g cmd/api/main.go -o docs/swagger
 	npm run convert-openapi
 
-.PHONY: generate-mocks
 generate-mocks:
 	go generate ./internal/mocks/...
 
