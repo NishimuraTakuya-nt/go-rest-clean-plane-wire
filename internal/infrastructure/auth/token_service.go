@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"context"
 	"errors"
 	"time"
 
@@ -10,8 +11,8 @@ import (
 )
 
 type TokenService interface {
-	GenerateToken(userID string, roles []string) (string, error)
-	ValidateToken(tokenString string) (*models.Claims, error)
+	GenerateToken(ctx context.Context, userID string, roles []string) (string, error)
+	ValidateToken(ctx context.Context, tokenString string) (*models.Claims, error)
 }
 
 type tokenService struct {
@@ -24,7 +25,7 @@ func NewTokenService(cfg *config.Config) TokenService {
 	}
 }
 
-func (s *tokenService) GenerateToken(userID string, roles []string) (string, error) {
+func (s *tokenService) GenerateToken(_ context.Context, userID string, roles []string) (string, error) {
 	claims := &models.Claims{
 		UserID: userID,
 		Roles:  roles,
@@ -39,7 +40,7 @@ func (s *tokenService) GenerateToken(userID string, roles []string) (string, err
 	return token.SignedString([]byte(s.config.JWTSecretKey))
 }
 
-func (s *tokenService) ValidateToken(tokenString string) (*models.Claims, error) {
+func (s *tokenService) ValidateToken(_ context.Context, tokenString string) (*models.Claims, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &models.Claims{}, func(_ *jwt.Token) (any, error) {
 		return []byte(s.config.JWTSecretKey), nil
 	})

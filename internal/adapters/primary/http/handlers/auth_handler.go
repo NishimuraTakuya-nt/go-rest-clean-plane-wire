@@ -58,7 +58,7 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	userID := req.Username
 	roles := []string{"role:teamA:editor", "role:teamB:viewer"} // 実際のアプリケーションでは、データベースからユーザーのロールを取得する必要があります
 
-	token, err := h.authUsecase.Login(userID, roles)
+	token, err := h.authUsecase.Login(r.Context(), userID, roles)
 	if err != nil {
 		log.Error("Failed to generate token", "error", err)
 		http.Error(w, "Failed to generate token", http.StatusInternalServerError)

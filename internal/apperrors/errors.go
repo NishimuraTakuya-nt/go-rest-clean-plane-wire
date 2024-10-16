@@ -20,18 +20,16 @@ func (e *AppError) Error() string {
 type ErrorType string
 
 const (
-	ErrorTypeValidation         ErrorType = "VALIDATION_ERROR"
-	ErrorTypeNotFound           ErrorType = "NOT_FOUND"
+	ErrorTypeBadRequest         ErrorType = "BAD_REQUEST"
 	ErrorTypeUnauthorized       ErrorType = "UNAUTHORIZED"
 	ErrorTypeForbidden          ErrorType = "FORBIDDEN"
-	ErrorTypeInternal           ErrorType = "INTERNAL_ERROR"
-	ErrorTypeBadRequest         ErrorType = "BAD_REQUEST"
+	ErrorTypeNotFound           ErrorType = "NOT_FOUND"
 	ErrorTypeConflict           ErrorType = "CONFLICT"
 	ErrorTypeRateLimit          ErrorType = "RATE_LIMIT"
-	ErrorTypeServiceUnavailable ErrorType = "SERVICE_UNAVAILABLE"
+	ErrorTypeInternal           ErrorType = "INTERNAL_ERROR"
 	ErrorTypeExternalService    ErrorType = "EXTERNAL_SERVICE_ERROR"
-	ErrorTypeDataAccess         ErrorType = "DATA_ACCESS_ERROR"
-	ErrorTypeBusinessLogic      ErrorType = "BUSINESS_LOGIC_ERROR"
+	ErrorTypeServiceUnavailable ErrorType = "SERVICE_UNAVAILABLE"
+	ErrorTypeTimeout            ErrorType = "TIMEOUT"
 )
 
 // NewAppError creates a new AppError
@@ -44,51 +42,52 @@ func NewAppError(errType ErrorType, rawErr error, statusCode int, message string
 	}
 }
 
-// Predefined error creators
-func NewValidationError(message string, rawErr error) *AppError {
-	return NewAppError(ErrorTypeValidation, rawErr, http.StatusBadRequest, message)
-}
-
-func NewNotFoundError(message string, rawErr error) *AppError {
-	return NewAppError(ErrorTypeNotFound, rawErr, http.StatusNotFound, message)
-}
-
-func NewUnauthorizedError(message string, rawErr error) *AppError {
-	return NewAppError(ErrorTypeUnauthorized, rawErr, http.StatusUnauthorized, message)
-}
-
-func NewForbiddenError(message string, rawErr error) *AppError {
-	return NewAppError(ErrorTypeForbidden, rawErr, http.StatusForbidden, message)
-}
-
-func NewInternalError(message string, rawErr error) *AppError {
-	return NewAppError(ErrorTypeInternal, rawErr, http.StatusInternalServerError, message)
-}
-
+// NewBadRequestError 400 Bad Request
 func NewBadRequestError(message string, rawErr error) *AppError {
 	return NewAppError(ErrorTypeBadRequest, rawErr, http.StatusBadRequest, message)
 }
 
+// NewUnauthorizedError 401 Unauthorized
+func NewUnauthorizedError(message string, rawErr error) *AppError {
+	return NewAppError(ErrorTypeUnauthorized, rawErr, http.StatusUnauthorized, message)
+}
+
+// NewForbiddenError 403 Forbidden
+func NewForbiddenError(message string, rawErr error) *AppError {
+	return NewAppError(ErrorTypeForbidden, rawErr, http.StatusForbidden, message)
+}
+
+// NewNotFoundError 404 Not Found
+func NewNotFoundError(message string, rawErr error) *AppError {
+	return NewAppError(ErrorTypeNotFound, rawErr, http.StatusNotFound, message)
+}
+
+// NewConflictError 409 Conflict
 func NewConflictError(message string, rawErr error) *AppError {
 	return NewAppError(ErrorTypeConflict, rawErr, http.StatusConflict, message)
 }
 
+// NewRateLimitError 429 Too Many Requests
 func NewRateLimitError(message string, rawErr error) *AppError {
 	return NewAppError(ErrorTypeRateLimit, rawErr, http.StatusTooManyRequests, message)
 }
 
-func NewServiceUnavailableError(message string, rawErr error) *AppError {
-	return NewAppError(ErrorTypeServiceUnavailable, rawErr, http.StatusServiceUnavailable, message)
+// NewInternalError 500 Internal Server Error
+func NewInternalError(message string, rawErr error) *AppError {
+	return NewAppError(ErrorTypeInternal, rawErr, http.StatusInternalServerError, message)
 }
 
+// NewExternalServiceError 502 Bad Gateway
 func NewExternalServiceError(message string, rawErr error) *AppError {
 	return NewAppError(ErrorTypeExternalService, rawErr, http.StatusBadGateway, message)
 }
 
-func NewDataAccessError(message string, rawErr error) *AppError {
-	return NewAppError(ErrorTypeDataAccess, rawErr, http.StatusInternalServerError, message)
+// NewServiceUnavailableError 503 Service Unavailable
+func NewServiceUnavailableError(message string, rawErr error) *AppError {
+	return NewAppError(ErrorTypeServiceUnavailable, rawErr, http.StatusServiceUnavailable, message)
 }
 
-func NewBusinessLogicError(message string, rawErr error) *AppError {
-	return NewAppError(ErrorTypeBusinessLogic, rawErr, http.StatusUnprocessableEntity, message)
+// NewTimeoutError 504 Gateway Timeout
+func NewTimeoutError(message string, rawErr error) *AppError {
+	return NewAppError(ErrorTypeTimeout, rawErr, http.StatusGatewayTimeout, message)
 }

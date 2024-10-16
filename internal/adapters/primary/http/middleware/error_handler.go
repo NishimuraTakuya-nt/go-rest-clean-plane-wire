@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -11,16 +10,12 @@ import (
 	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/adapters/primary/http/dto/response"
 	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/apperrors"
 	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/infrastructure/logger"
-	"github.com/google/uuid"
 )
 
 func ErrorHandler() func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			requestID := uuid.New().String()
-			// nolint:staticcheck
-			ctx := context.WithValue(r.Context(), RequestIDKey, requestID)
-			r = r.WithContext(ctx)
+			requestID := GetRequestID(r.Context())
 			log := logger.GetLogger()
 
 			rw, ok := w.(*ResponseWriter)
@@ -84,7 +79,7 @@ func handleError(rw *ResponseWriter, err error, requestID string) {
 		}
 		res = response.ErrorResponse{
 			StatusCode: statusCode,
-			Type:       string(apperrors.ErrorTypeValidation),
+			Type:       string(apperrors.ErrorTypeBadRequest),
 			RequestID:  requestID,
 			Message:    "Validation error",
 			Details:    details,

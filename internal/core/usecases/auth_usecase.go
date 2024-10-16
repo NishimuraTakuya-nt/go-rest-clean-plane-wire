@@ -1,13 +1,15 @@
 package usecases
 
 import (
+	"context"
+
 	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/core/domain/models"
 	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/infrastructure/auth"
 )
 
 type AuthUsecase interface {
-	Login(userID string, roles []string) (string, error)
-	Authenticate(tokenString string) (*models.User, error)
+	Login(ctx context.Context, userID string, roles []string) (string, error)
+	Authenticate(ctx context.Context, tokenString string) (*models.User, error)
 }
 
 type authUsecase struct {
@@ -20,12 +22,12 @@ func NewAuthUsecase(tokenService auth.TokenService) AuthUsecase {
 	}
 }
 
-func (uc *authUsecase) Login(userID string, roles []string) (string, error) {
-	return uc.tokenService.GenerateToken(userID, roles)
+func (uc *authUsecase) Login(ctx context.Context, userID string, roles []string) (string, error) {
+	return uc.tokenService.GenerateToken(ctx, userID, roles)
 }
 
-func (uc *authUsecase) Authenticate(tokenString string) (*models.User, error) {
-	claims, err := uc.tokenService.ValidateToken(tokenString)
+func (uc *authUsecase) Authenticate(ctx context.Context, tokenString string) (*models.User, error) {
+	claims, err := uc.tokenService.ValidateToken(ctx, tokenString)
 	if err != nil {
 		return nil, err
 	}

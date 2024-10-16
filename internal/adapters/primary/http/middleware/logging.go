@@ -14,15 +14,17 @@ func Logging() Middleware {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			start := time.Now()
 			log := logger.GetLogger()
+			requestID := GetRequestID(r.Context())
 
 			// リクエスト開始時のログ
 			log.Info("Request started",
+				slog.String("request_id", requestID),
 				slog.String("method", r.Method),
 				slog.String("path", r.URL.Path),
 				slog.String("remote_addr", r.RemoteAddr),
 			)
 
-			// ResponseWriter のラッピングを一度だけ行う（他のMiddlewareではこれを使い回す）
+			// ResponseWriter のラッピングを一度だけ行う（後続のMiddlewareではこれを使い回す）
 			rw := NewResponseWriter(w)
 
 			// 次のハンドラを呼び出し
@@ -31,6 +33,7 @@ func Logging() Middleware {
 			// リクエスト終了時のログ
 			duration := time.Since(start)
 			log.Info("Request completed",
+				slog.String("request_id", requestID),
 				slog.String("method", r.Method),
 				slog.String("path", r.URL.Path),
 				slog.Int("status", rw.StatusCode),

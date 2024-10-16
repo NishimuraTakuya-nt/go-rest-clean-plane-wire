@@ -12,8 +12,6 @@ func Chain(h http.Handler, middleware ...Middleware) http.Handler {
 	return h
 }
 
-var RequestIDKey = struct{}{}
-
 type ResponseWriter struct {
 	http.ResponseWriter
 	StatusCode int

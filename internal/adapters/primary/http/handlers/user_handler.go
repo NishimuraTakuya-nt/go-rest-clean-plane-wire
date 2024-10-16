@@ -57,7 +57,7 @@ func (h *UserHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func (h *UserHandler) Get(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := logger.GetLogger()
-	requestID, _ := ctx.Value(middleware.RequestIDKey).(string)
+	requestID := middleware.GetRequestID(ctx)
 
 	parts := strings.Split(r.URL.Path, "/")
 	if len(parts) != 3 {

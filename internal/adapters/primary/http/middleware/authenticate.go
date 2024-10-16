@@ -53,7 +53,7 @@ func Authenticate(authUsecase usecases.AuthUsecase) Middleware {
 			}
 
 			tokenString := authHeader[7:]
-			user, err := authUsecase.Authenticate(tokenString)
+			user, err := authUsecase.Authenticate(r.Context(), tokenString)
 			if err != nil {
 				log.Error("Token validation failed", "error", err)
 				rw.WriteError(apperrors.NewUnauthorizedError("Invalid or expired token", nil))
