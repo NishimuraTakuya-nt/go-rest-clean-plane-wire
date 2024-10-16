@@ -14,6 +14,7 @@ import (
 	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/core/usecases"
 	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/infrastructure/auth"
 	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/infrastructure/config"
+	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/infrastructure/logger"
 	"net/http"
 )
 
@@ -26,13 +27,14 @@ import (
 func InitializeAPI(cfg *config.Config) (http.Handler, error) {
 	tokenService := auth.NewTokenService(cfg)
 	authUsecase := usecases.NewAuthUsecase(tokenService)
-	healthcheckHandler := handlers.NewHealthcheckHandler()
+	loggerLogger := logger.NewLogger()
+	healthcheckHandler := handlers.NewHealthcheckHandler(loggerLogger)
 	healthcheckRouter := v1.NewHealthcheckRouter(healthcheckHandler)
-	authHandler := handlers.NewAuthHandler(authUsecase)
+	authHandler := handlers.NewAuthHandler(loggerLogger, authUsecase)
 	authRouter := v1.NewAuthRouter(authHandler)
-	client := piyographql.NewClient()
-	userUsecase := usecases.NewUserUsecase(client)
-	userHandler := handlers.NewUserHandler(userUsecase)
+	client := piyographql.NewClient(loggerLogger)
+	userUsecase := usecases.NewUserUsecase(loggerLogger, client)
+	userHandler := handlers.NewUserHandler(loggerLogger, userUsecase)
 	userRouter := v1.NewUserRouter(userHandler)
 	productHandler := handlers.NewProductHandler()
 	productRouter := v1.NewProductRouter(productHandler)

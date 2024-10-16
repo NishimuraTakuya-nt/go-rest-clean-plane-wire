@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"net/http"
@@ -17,7 +18,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	err := json.NewEncoder(w).Encode(map[string]string{"message": "Welcome to the API"})
 	if err != nil {
-		logger.GetLogger().Warn("Failed to encode response", "error", err)
+		logger.NewLogger().Warn("Failed to encode response", "error", err)
 		return
 	}
 }
@@ -30,11 +31,17 @@ func writeError(w http.ResponseWriter, err error) {
 	}
 }
 
-func writeJSONResponse(w http.ResponseWriter, data any, requestID string) {
+func writeJSONResponse(ctx context.Context, w http.ResponseWriter, data any) {
+	select {
+	case <-ctx.Done():
+		// コンテキストがキャンセルされている場合
+		return
+	default:
+	}
+
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(data); err != nil {
-		log := logger.GetLogger()
-		log.Error("Failed to encode response", "error", err, "request_id", requestID)
+		logger.NewLogger().ErrorContext(ctx, "Failed to encode response", "error", err)
 		writeError(w, apperrors.NewInternalError("Failed to encode response", err))
 	}
 }

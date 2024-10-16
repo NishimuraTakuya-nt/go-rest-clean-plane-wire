@@ -22,7 +22,7 @@ var excludedPaths = []string{
 func Authenticate(authUsecase usecases.AuthUsecase) Middleware {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			log := logger.GetLogger()
+			log := logger.NewLogger()
 
 			rw, ok := w.(*ResponseWriter)
 			if !ok {
@@ -41,13 +41,13 @@ func Authenticate(authUsecase usecases.AuthUsecase) Middleware {
 			// 認証方法は適宜変更する
 			authHeader := r.Header.Get("Authorization")
 			if authHeader == "" {
-				log.Warn("Missing authorization header")
+				log.WarnContext(r.Context(), "Missing authorization header")
 				rw.WriteError(apperrors.NewUnauthorizedError("Missing authorization header", nil))
 				return
 			}
 
 			if len(authHeader) <= 7 || authHeader[:7] != "Bearer " {
-				log.Warn("Invalid token format", "header", authHeader)
+				log.WarnContext(r.Context(), "Invalid token format", "header", authHeader)
 				rw.WriteError(apperrors.NewUnauthorizedError("Invalid token format", nil))
 				return
 			}
@@ -55,14 +55,14 @@ func Authenticate(authUsecase usecases.AuthUsecase) Middleware {
 			tokenString := authHeader[7:]
 			user, err := authUsecase.Authenticate(r.Context(), tokenString)
 			if err != nil {
-				log.Error("Token validation failed", "error", err)
+				log.ErrorContext(r.Context(), "Token validation failed", "error", err)
 				rw.WriteError(apperrors.NewUnauthorizedError("Invalid or expired token", nil))
 				return
 			}
 
 			// nolint:staticcheck
 			ctx := context.WithValue(r.Context(), UserKey, user)
-			log.Info("User authenticated", "user_id", user.ID)
+			log.InfoContext(r.Context(), "User authenticated")
 			next.ServeHTTP(rw, r.WithContext(ctx))
 		})
 	}

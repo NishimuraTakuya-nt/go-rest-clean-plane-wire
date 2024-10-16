@@ -52,7 +52,7 @@ func NewRouter(
 	// ミドルウェアの適用
 	handler := middleware.Chain(
 		mux,
-		middleware.RequestID(),
+		middleware.Context(),
 		middleware.CORS(corsConfig),
 		middleware.Logging(),
 		middleware.ErrorHandler(),

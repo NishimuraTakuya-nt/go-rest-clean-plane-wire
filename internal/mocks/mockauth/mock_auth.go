@@ -5,6 +5,7 @@
 package mockauth
 
 import (
+	context "context"
 	reflect "reflect"
 
 	models "github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/core/domain/models"
@@ -35,31 +36,31 @@ func (m *MockTokenService) EXPECT() *MockTokenServiceMockRecorder {
 }
 
 // GenerateToken mocks base method.
-func (m *MockTokenService) GenerateToken(arg0 string, arg1 []string) (string, error) {
+func (m *MockTokenService) GenerateToken(arg0 context.Context, arg1 string, arg2 []string) (string, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GenerateToken", arg0, arg1)
+	ret := m.ctrl.Call(m, "GenerateToken", arg0, arg1, arg2)
 	ret0, _ := ret[0].(string)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GenerateToken indicates an expected call of GenerateToken.
-func (mr *MockTokenServiceMockRecorder) GenerateToken(arg0, arg1 interface{}) *gomock.Call {
+func (mr *MockTokenServiceMockRecorder) GenerateToken(arg0, arg1, arg2 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateToken", reflect.TypeOf((*MockTokenService)(nil).GenerateToken), arg0, arg1)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateToken", reflect.TypeOf((*MockTokenService)(nil).GenerateToken), arg0, arg1, arg2)
 }
 
 // ValidateToken mocks base method.
-func (m *MockTokenService) ValidateToken(arg0 string) (*models.Claims, error) {
+func (m *MockTokenService) ValidateToken(arg0 context.Context, arg1 string) (*models.Claims, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ValidateToken", arg0)
+	ret := m.ctrl.Call(m, "ValidateToken", arg0, arg1)
 	ret0, _ := ret[0].(*models.Claims)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ValidateToken indicates an expected call of ValidateToken.
-func (mr *MockTokenServiceMockRecorder) ValidateToken(arg0 interface{}) *gomock.Call {
+func (mr *MockTokenServiceMockRecorder) ValidateToken(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ValidateToken", reflect.TypeOf((*MockTokenService)(nil).ValidateToken), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ValidateToken", reflect.TypeOf((*MockTokenService)(nil).ValidateToken), arg0, arg1)
 }

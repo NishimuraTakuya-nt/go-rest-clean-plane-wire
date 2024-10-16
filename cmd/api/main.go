@@ -25,13 +25,13 @@ import (
 // @name Authorization
 func main() {
 	if err := run(); err != nil {
-		logger.GetLogger().Error("Application failed to run", "error", err)
+		logger.NewLogger().Error("Application failed to run", "error", err)
 		os.Exit(1)
 	}
 }
 
 func run() error {
-	log := logger.GetLogger()
+	log := logger.NewLogger()
 	cfg := config.Load()
 
 	router, err := InitializeAPI(cfg)

@@ -14,10 +14,11 @@ func Timeout(duration time.Duration) Middleware {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			ctx, cancel := context.WithTimeout(r.Context(), duration)
 			defer cancel()
+			log := logger.NewLogger()
 
 			rw, ok := w.(*ResponseWriter)
 			if !ok {
-				logger.GetLogger().Warn("ResponseWriter is not of type *ResponseWriter")
+				log.WarnContext(ctx, "ResponseWriter is not of type *ResponseWriter")
 				return
 			}
 
@@ -31,6 +32,7 @@ func Timeout(duration time.Duration) Middleware {
 			case <-done:
 				return
 			case <-ctx.Done():
+				log.ErrorContext(r.Context(), "Request timed out")
 				rw.WriteError(apperrors.NewTimeoutError("Request timed out", ctx.Err()))
 			}
 		})

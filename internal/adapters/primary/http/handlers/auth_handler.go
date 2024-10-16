@@ -11,11 +11,13 @@ import (
 )
 
 type AuthHandler struct {
+	log         logger.Logger
 	authUsecase usecases.AuthUsecase
 }
 
-func NewAuthHandler(authUsecase usecases.AuthUsecase) *AuthHandler {
+func NewAuthHandler(log logger.Logger, authUsecase usecases.AuthUsecase) *AuthHandler {
 	return &AuthHandler{
+		log:         log,
 		authUsecase: authUsecase,
 	}
 }
@@ -44,11 +46,11 @@ func (h *AuthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // @Failure 500 {object} response.ErrorResponse
 // @Router /auth/login [post]
 func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
-	log := logger.GetLogger()
+	ctx := r.Context()
 
 	var req request.LoginRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		log.Error("Failed to decode login request", "error", err)
+		h.log.ErrorContext(ctx, "Failed to decode login request", "error", err)
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
@@ -60,7 +62,7 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 
 	token, err := h.authUsecase.Login(r.Context(), userID, roles)
 	if err != nil {
-		log.Error("Failed to generate token", "error", err)
+		h.log.ErrorContext(ctx, "Failed to generate token", "error", err)
 		http.Error(w, "Failed to generate token", http.StatusInternalServerError)
 		return
 	}
@@ -69,9 +71,9 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	err = json.NewEncoder(w).Encode(res)
 	if err != nil {
-		log.Error("Failed to encode login response", "error", err)
+		h.log.ErrorContext(ctx, "Failed to encode login response", "error", err)
 		return
 	}
 
-	log.Info("Login successful", "user_id", userID)
+	h.log.InfoContext(ctx, "Login successful")
 }

@@ -13,11 +13,13 @@ import (
 	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/core/usecases"
 	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/infrastructure/auth"
 	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/infrastructure/config"
+	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/infrastructure/logger"
 	"github.com/google/wire"
 )
 
 func InitializeAPI(cfg *config.Config) (http.Handler, error) {
 	wire.Build(
+		logger.Set,
 		piyographql.Set,
 		auth.Set,
 		usecases.Set,

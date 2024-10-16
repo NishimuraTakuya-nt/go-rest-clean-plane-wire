@@ -4,12 +4,18 @@ import (
 	"encoding/json"
 	"net/http"
 	"strings"
+
+	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/infrastructure/logger"
 )
 
-type HealthcheckHandler struct{}
+type HealthcheckHandler struct {
+	log logger.Logger
+}
 
-func NewHealthcheckHandler() *HealthcheckHandler {
-	return &HealthcheckHandler{}
+func NewHealthcheckHandler(log logger.Logger) *HealthcheckHandler {
+	return &HealthcheckHandler{
+		log: log,
+	}
 }
 
 func (h *HealthcheckHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -29,8 +35,9 @@ func (h *HealthcheckHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} map[string]string
 // @Failure 500 {object} response.ErrorResponse
 // @Router /healthcheck [get]
-func (h *HealthcheckHandler) Get(w http.ResponseWriter, _ *http.Request) {
+func (h *HealthcheckHandler) Get(w http.ResponseWriter, r *http.Request) {
 	// healthcheck
+	h.log.InfoContext(r.Context(), "Healthcheck ok")
 	// nolint:errcheck
 	json.NewEncoder(w).Encode(map[string]string{"message": "healthcheck ok"})
 }

@@ -14,11 +14,14 @@ type Client interface {
 }
 
 type client struct {
+	log logger.Logger
 	// クライアントの設定など
 }
 
-func NewClient() Client {
-	return &client{}
+func NewClient(log logger.Logger) Client {
+	return &client{
+		log: log,
+	}
 }
 
 func (c *client) GetUser(_ context.Context, ID string) (*models.User, error) {
@@ -35,8 +38,8 @@ func (c *client) GetUser(_ context.Context, ID string) (*models.User, error) {
 	}, nil
 }
 
-func (c *client) ListUser(_ context.Context, offset, limit *int) ([]models.User, error) {
-	logger.GetLogger().Error("client ListUser", "offset", offset, "limit", limit)
+func (c *client) ListUser(ctx context.Context, offset, limit *int) ([]models.User, error) {
+	c.log.InfoContext(ctx, "client ListUser", "offset", offset, "limit", limit)
 	return []models.User{
 		{
 			ID:    "1",

@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -15,8 +16,7 @@ import (
 func ErrorHandler() func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			requestID := GetRequestID(r.Context())
-			log := logger.GetLogger()
+			log := logger.NewLogger()
 
 			rw, ok := w.(*ResponseWriter)
 			if !ok {
@@ -25,9 +25,9 @@ func ErrorHandler() func(http.Handler) http.Handler {
 			}
 
 			defer func() {
-				if r := recover(); r != nil {
+				if re := recover(); re != nil {
 					var panicErr error
-					switch err := r.(type) {
+					switch err := re.(type) {
 					case string:
 						panicErr = errors.New(err)
 					case error:
@@ -40,32 +40,33 @@ func ErrorHandler() func(http.Handler) http.Handler {
 					stack := debug.Stack()
 
 					// 詳細なログを記録
-					log.Error("Panic occurred",
+					log.ErrorContext(r.Context(),
+						"Panic occurred",
 						"error", panicErr,
 						"stack", string(stack),
-						"request_id", requestID,
 					)
 
 					// クライアントへのレスポンス用エラー
 					clientErr := apperrors.NewInternalError("Unexpected error occurred", panicErr)
 
 					// エラーハンドリング
-					handleError(rw, clientErr, requestID)
+					handleError(r.Context(), rw, clientErr)
 				}
 			}()
 
 			next.ServeHTTP(rw, r)
 
 			if rw.Err != nil {
-				handleError(rw, rw.Err, requestID)
+				handleError(r.Context(), rw, rw.Err)
 			}
 		})
 	}
 }
 
-func handleError(rw *ResponseWriter, err error, requestID string) {
+func handleError(ctx context.Context, rw *ResponseWriter, err error) {
 	var res response.ErrorResponse
 	var statusCode int
+	requestID := GetRequestID(ctx)
 
 	switch e := err.(type) {
 	case *apperrors.ValidationErrors:
@@ -107,6 +108,6 @@ func handleError(rw *ResponseWriter, err error, requestID string) {
 	rw.Header().Set("Content-Type", "application/json")
 	rw.WriteHeader(statusCode)
 	if err := json.NewEncoder(rw).Encode(res); err != nil {
-		logger.GetLogger().Error("Failed to encode error response", "error", err, "request_id", requestID)
+		logger.NewLogger().ErrorContext(ctx, "Failed to encode error response", "error", err)
 	}
 }

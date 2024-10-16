@@ -14,25 +14,20 @@ type UserUsecase interface {
 }
 
 type userUsecase struct {
+	log           logger.Logger
 	graphqlClient piyographql.Client
 }
 
-func NewUserUsecase(client piyographql.Client) UserUsecase {
+func NewUserUsecase(log logger.Logger, client piyographql.Client) UserUsecase {
 	return &userUsecase{
+		log:           log,
 		graphqlClient: client,
 	}
 }
 
 func (uc *userUsecase) Get(ctx context.Context, ID string) (*models.User, error) {
 	// todo trace log
-
-	n := lenID(ID)
-	logger.GetLogger().Info("lenID", "n", n)
 	return uc.graphqlClient.GetUser(ctx, ID)
-}
-
-func lenID(ID string) int {
-	return len(ID)
 }
 
 func (uc *userUsecase) List(ctx context.Context, offset, limit *int) ([]models.User, error) {

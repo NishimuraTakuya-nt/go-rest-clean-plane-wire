@@ -6,18 +6,19 @@ import (
 	"strings"
 
 	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/adapters/primary/http/dto/response"
-	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/adapters/primary/http/middleware"
 	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/apperrors"
 	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/core/usecases"
 	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/infrastructure/logger"
 )
 
 type UserHandler struct {
+	log         logger.Logger
 	userUsecase usecases.UserUsecase
 }
 
-func NewUserHandler(userUsecase usecases.UserUsecase) *UserHandler {
+func NewUserHandler(log logger.Logger, userUsecase usecases.UserUsecase) *UserHandler {
 	return &UserHandler{
+		log:         log,
 		userUsecase: userUsecase,
 	}
 }
@@ -56,12 +57,10 @@ func (h *UserHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // @Router /user/{id} [get]
 func (h *UserHandler) Get(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	log := logger.GetLogger()
-	requestID := middleware.GetRequestID(ctx)
 
 	parts := strings.Split(r.URL.Path, "/")
 	if len(parts) != 3 {
-		log.Warn("Invalid user ID in request", "path", r.URL.Path, "request_id", requestID)
+		h.log.WarnContext(ctx, "Invalid user ID in request")
 		writeError(w, apperrors.NewBadRequestError("Invalid user ID", nil))
 		return
 	}
@@ -69,14 +68,14 @@ func (h *UserHandler) Get(w http.ResponseWriter, r *http.Request) {
 
 	user, err := h.userUsecase.Get(ctx, userID)
 	if err != nil {
-		log.Error("Failed to get user", "error", err, "user_id", userID, "request_id", requestID)
+		h.log.ErrorContext(ctx, "Failed to get user", "error", err)
 		writeError(w, err)
 		return
 	}
 
 	res := response.ToUserResponse(user)
 
-	writeJSONResponse(w, res, requestID)
+	writeJSONResponse(ctx, w, res)
 }
 
 // List godoc
@@ -93,13 +92,11 @@ func (h *UserHandler) Get(w http.ResponseWriter, r *http.Request) {
 // @Router /users [get]
 func (h *UserHandler) List(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	log := logger.GetLogger()
-	requestID, _ := ctx.Value(middleware.RequestIDKey).(string)
 
 	// クエリパラメータの取得とバリデーション
 	offset, limit, err := getPaginationParams(r)
 	if err != nil {
-		log.Warn("Invalid pagination parameters", "error", err, "request_id", requestID)
+		h.log.WarnContext(ctx, "Invalid pagination parameters", "error", err)
 		writeError(w, apperrors.NewBadRequestError(err.Error(), err))
 		return
 	}
@@ -107,14 +104,14 @@ func (h *UserHandler) List(w http.ResponseWriter, r *http.Request) {
 	// ユーザーリストの取得
 	users, err := h.userUsecase.List(ctx, offset, limit)
 	if err != nil {
-		log.Error("Failed to get user list", "error", err, "request_id", requestID)
+		h.log.ErrorContext(ctx, "Failed to get user list", "error", err)
 		writeError(w, err)
 		return
 	}
 
 	res := response.ToListUserResponse(users, *offset, *limit)
 
-	writeJSONResponse(w, res, requestID)
+	writeJSONResponse(ctx, w, res)
 }
 
 func (h *UserHandler) Create(w http.ResponseWriter, _ *http.Request) {
