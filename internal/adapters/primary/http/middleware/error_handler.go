@@ -71,10 +71,11 @@ func handleError(ctx context.Context, rw *ResponseWriter, err error) {
 	switch e := err.(type) {
 	case *apperrors.ValidationErrors:
 		statusCode = http.StatusBadRequest
-		details := make([]map[string]string, 0, len(*e))
+		details := make([]map[string]any, 0, len(*e))
 		for _, fe := range *e {
-			details = append(details, map[string]string{
+			details = append(details, map[string]any{
 				"field":   fe.Field,
+				"value":   fe.Value,
 				"message": fe.Message,
 			})
 		}

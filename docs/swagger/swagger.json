@@ -84,6 +84,63 @@
                 }
             }
         },
+        "/user": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Create a new user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "User create",
+                "parameters": [
+                    {
+                        "description": "User information",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.UserRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.UserResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/user/{id}": {
             "get": {
                 "security": [
@@ -200,6 +257,24 @@
         }
     },
     "definitions": {
+        "request.HobbyRequest": {
+            "description": "Hobby information",
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 50,
+                    "minLength": 2
+                }
+            }
+        },
         "request.LoginRequest": {
             "description": "LoginRequest is a struct that represents the request of login",
             "type": "object",
@@ -209,6 +284,67 @@
                 },
                 "username": {
                     "type": "string"
+                }
+            }
+        },
+        "request.SpecRequest": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "tall": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "weight": {
+                    "type": "integer",
+                    "minimum": 1
+                }
+            }
+        },
+        "request.UserRequest": {
+            "description": "User account information",
+            "type": "object",
+            "required": [
+                "age",
+                "email",
+                "name",
+                "spec"
+            ],
+            "properties": {
+                "age": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "email": {
+                    "type": "string",
+                    "maxLength": 50,
+                    "minLength": 2
+                },
+                "hobby": {
+                    "$ref": "#/definitions/request.HobbyRequest"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 50,
+                    "minLength": 2
+                },
+                "roles": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "spec": {
+                    "$ref": "#/definitions/request.SpecRequest"
                 }
             }
         },

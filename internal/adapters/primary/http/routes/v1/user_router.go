@@ -16,5 +16,5 @@ func NewUserRouter(userHandler *handlers.UserHandler) *UserRouter {
 
 func (r *UserRouter) SetupUserRoutes(mux *http.ServeMux) {
 	mux.Handle("/users", r.userHandler)
-	mux.Handle("/user/", r.userHandler)
+	mux.Handle("/user", r.userHandler)
 }

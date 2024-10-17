@@ -8,6 +8,7 @@ import (
 // FieldError represents a validation error for a specific field
 type FieldError struct {
 	Field   string
+	Value   any
 	Message string
 }
 
@@ -23,8 +24,8 @@ func (ve *ValidationErrors) Error() string {
 }
 
 // AddError adds a new FieldError to ValidationErrors
-func (ve *ValidationErrors) AddError(field, message string) {
-	*ve = append(*ve, FieldError{Field: field, Message: message})
+func (ve *ValidationErrors) AddError(field string, value any, message string) {
+	*ve = append(*ve, FieldError{Field: field, Value: value, Message: message})
 }
 
 // NewValidationErrors creates a new ValidationErrors instance

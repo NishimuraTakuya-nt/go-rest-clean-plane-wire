@@ -46,6 +46,7 @@ func writeJSONResponse(ctx context.Context, w http.ResponseWriter, data any) {
 	}
 }
 
+// todo 実装の場所変える。処理がこれで良いかも使う時にブラッシュアップする
 // getPaginationParams はクエリパラメータからオフセットとリミットを取得し、バリデーションを行います
 func getPaginationParams(r *http.Request) (*int, *int, error) {
 	offsetStr := r.URL.Query().Get("offset")

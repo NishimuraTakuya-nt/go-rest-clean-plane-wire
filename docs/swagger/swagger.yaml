@@ -1,5 +1,18 @@
 basePath: /api/v1
 definitions:
+  request.HobbyRequest:
+    description: Hobby information
+    properties:
+      id:
+        minimum: 1
+        type: integer
+      name:
+        maxLength: 50
+        minLength: 2
+        type: string
+    required:
+    - name
+    type: object
   request.LoginRequest:
     description: LoginRequest is a struct that represents the request of login
     properties:
@@ -7,6 +20,50 @@ definitions:
         type: string
       username:
         type: string
+    type: object
+  request.SpecRequest:
+    properties:
+      id:
+        minimum: 1
+        type: integer
+      tall:
+        minimum: 1
+        type: integer
+      weight:
+        minimum: 1
+        type: integer
+    required:
+    - id
+    type: object
+  request.UserRequest:
+    description: User account information
+    properties:
+      age:
+        minimum: 1
+        type: integer
+      email:
+        maxLength: 50
+        minLength: 2
+        type: string
+      hobby:
+        $ref: '#/definitions/request.HobbyRequest'
+      id:
+        type: string
+      name:
+        maxLength: 50
+        minLength: 2
+        type: string
+      roles:
+        items:
+          type: string
+        type: array
+      spec:
+        $ref: '#/definitions/request.SpecRequest'
+    required:
+    - age
+    - email
+    - name
+    - spec
     type: object
   response.ErrorResponse:
     description: Error response structure
@@ -115,6 +172,42 @@ paths:
       summary: Health check endpoint
       tags:
       - healthcheck
+  /user:
+    post:
+      consumes:
+      - application/json
+      description: Create a new user
+      parameters:
+      - description: User information
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.UserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.UserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: User create
+      tags:
+      - user
   /user/{id}:
     get:
       consumes:

@@ -4,11 +4,14 @@ import (
 	"encoding/json"
 	"net/http"
 	"strings"
+	"time"
 
+	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/adapters/primary/http/dto/request"
 	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/adapters/primary/http/dto/response"
 	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/apperrors"
 	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/core/usecases"
 	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/infrastructure/logger"
+	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/pkg/validator"
 )
 
 type UserHandler struct {
@@ -27,11 +30,11 @@ func (h *UserHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	switch {
 	case r.Method == http.MethodGet && strings.HasPrefix(r.URL.Path, "/user/"):
 		h.Get(w, r)
-
 	case r.Method == http.MethodGet && r.URL.Path == "/users":
 		h.List(w, r)
 	case r.Method == http.MethodPost && r.URL.Path == "/user":
 		h.Create(w, r)
+
 	case r.Method == http.MethodPut && strings.HasPrefix(r.URL.Path, "/user"):
 		h.Update(w, r)
 	case r.Method == http.MethodDelete && strings.HasPrefix(r.URL.Path, "/user"):
@@ -114,10 +117,45 @@ func (h *UserHandler) List(w http.ResponseWriter, r *http.Request) {
 	writeJSONResponse(ctx, w, res)
 }
 
-func (h *UserHandler) Create(w http.ResponseWriter, _ *http.Request) {
+// Create godoc
+// @Summary User create
+// @Description Create a new user
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param request body request.UserRequest true "User information"
+// @Security ApiKeyAuth
+// @Success 200 {object} response.UserResponse
+// @Failure 400 {object} response.ErrorResponse
+// @Failure 401 {object} response.ErrorResponse
+// @Failure 500 {object} response.ErrorResponse
+// @Router /user [post]
+func (h *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 	// ユーザー作成処理
-	// nolint:errcheck
-	json.NewEncoder(w).Encode(map[string]string{"message": "Create user"})
+	ctx := r.Context()
+
+	var req request.UserRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		h.log.ErrorContext(ctx, "Failed to decode user request", "error", err)
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	if validationErrors := validator.Validate(req); validationErrors != nil {
+		writeError(w, validationErrors)
+		return
+	}
+
+	res := response.UserResponse{
+		ID:        "123",
+		Name:      req.Name,
+		Roles:     []string{"role:teamA:editor", "role:teamB:viewer"},
+		Email:     req.Email,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
+
+	writeJSONResponse(ctx, w, res)
 }
 
 func (h *UserHandler) Update(w http.ResponseWriter, _ *http.Request) {

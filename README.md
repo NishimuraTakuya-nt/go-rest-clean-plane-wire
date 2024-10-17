@@ -6,7 +6,7 @@ base project for go rest api
 - viper
 - swag
 - gomock
-- todo: go-playground validator
+- go-playground validator
 
 ## 実装内容
 - 標準ライブラリでのルーディング
@@ -20,6 +20,7 @@ base project for go rest api
   - タイムアウト
   - 認証
 - カスタムロガー
+- バリデーター
 - wire ジェネレート
 - swagger定義のジェネレート
 - mock ジェネレート

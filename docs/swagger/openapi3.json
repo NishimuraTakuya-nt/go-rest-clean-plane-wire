@@ -98,6 +98,73 @@
         "summary": "Health check endpoint"
       }
     },
+    "/user": {
+      "post": {
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response.UserResponse"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response.ErrorResponse"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response.ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response.ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "tags": [
+          "user"
+        ],
+        "description": "Create a new user",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/request.UserRequest"
+              }
+            }
+          },
+          "description": "User information",
+          "required": true
+        },
+        "summary": "User create"
+      }
+    },
     "/user/{id}": {
       "get": {
         "parameters": [
@@ -241,6 +308,24 @@
   },
   "components": {
     "schemas": {
+      "request.HobbyRequest": {
+        "description": "Hobby information",
+        "properties": {
+          "id": {
+            "minimum": 1,
+            "type": "integer"
+          },
+          "name": {
+            "maxLength": 50,
+            "minLength": 2,
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "type": "object"
+      },
       "request.LoginRequest": {
         "description": "LoginRequest is a struct that represents the request of login",
         "properties": {
@@ -251,6 +336,67 @@
             "type": "string"
           }
         },
+        "type": "object"
+      },
+      "request.SpecRequest": {
+        "properties": {
+          "id": {
+            "minimum": 1,
+            "type": "integer"
+          },
+          "tall": {
+            "minimum": 1,
+            "type": "integer"
+          },
+          "weight": {
+            "minimum": 1,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "type": "object"
+      },
+      "request.UserRequest": {
+        "description": "User account information",
+        "properties": {
+          "age": {
+            "minimum": 1,
+            "type": "integer"
+          },
+          "email": {
+            "maxLength": 50,
+            "minLength": 2,
+            "type": "string"
+          },
+          "hobby": {
+            "$ref": "#/components/schemas/request.HobbyRequest"
+          },
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 50,
+            "minLength": 2,
+            "type": "string"
+          },
+          "roles": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "spec": {
+            "$ref": "#/components/schemas/request.SpecRequest"
+          }
+        },
+        "required": [
+          "age",
+          "email",
+          "name",
+          "spec"
+        ],
         "type": "object"
       },
       "response.ErrorResponse": {
