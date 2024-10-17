@@ -1,65 +1,39 @@
 package config
 
 import (
-	"os"
-	"strconv"
-	"strings"
 	"time"
+
+	"github.com/go-playground/validator/v10"
+	"github.com/spf13/viper"
 )
 
-type Config struct {
-	ServerAddress  string
-	AllowedOrigins []string
-	JWTSecretKey   string
-	RequestTimeout time.Duration
-	// その他の設定項目
+var Config appConfig
+
+type appConfig struct {
+	Env            string        `mapstructure:"env" validate:"required"`
+	LogLevel       string        `mapstructure:"log_level"`
+	ServerAddress  string        `mapstructure:"server_address" validate:"required"`
+	AllowedOrigins []string      `mapstructure:"allowed_origins" validate:"required"`
+	JWTSecretKey   string        `mapstructure:"jwt_secret_key" validate:"required"`
+	RequestTimeout time.Duration `mapstructure:"request_timeout" validate:"required"`
 }
 
-func Load() *Config {
-	return &Config{
-		ServerAddress:  getEnv("SERVER_ADDRESS", ":8081"),
-		AllowedOrigins: getEnvAsSlice("ALLOWED_ORIGINS", []string{"*"}),
-		JWTSecretKey:   getEnv("JWT_SECRET_KEY", "jwt-secret"),
-		RequestTimeout: getEnvAsDuration("REQUEST_TIMEOUT", 1*time.Second),
-		// その他の設定項目の読み込み
+func init() {
+	v := viper.New()
+	v.SetDefault("env", "dev")
+	v.SetDefault("log_level", "INFO")
+	v.SetDefault("server_address", ":8081")
+	v.SetDefault("allowed_origins", []string{"*"})
+	v.SetDefault("jwt_secret_key", "jwt-secret")
+	v.SetDefault("request_timeout", 180*time.Second)
+
+	viper.AutomaticEnv()
+	if err := v.Unmarshal(&Config); err != nil {
+		panic(err)
 	}
 }
 
-func getEnv(key, fallback string) string {
-	if value, ok := os.LookupEnv(key); ok {
-		return value
-	}
-	return fallback
-}
-
-func getEnvAsInt(key string, fallback int) int {
-	value := getEnv(key, "")
-	if value == "" {
-		return fallback
-	}
-	v, err := strconv.Atoi(value)
-	if err != nil {
-		return fallback
-	}
-	return v
-}
-
-func getEnvAsDuration(key string, fallback time.Duration) time.Duration {
-	value := getEnv(key, "")
-	if value == "" {
-		return fallback
-	}
-	v, err := time.ParseDuration(value)
-	if err != nil {
-		return fallback
-	}
-	return v
-}
-
-func getEnvAsSlice(key string, fallback []string) []string {
-	value := getEnv(key, "")
-	if value == "" {
-		return fallback
-	}
-	return strings.Split(value, ",")
+// Validate validates the config values.
+func (c *appConfig) Validate() error {
+	return validator.New().Struct(c)
 }

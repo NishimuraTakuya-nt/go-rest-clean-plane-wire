@@ -13,7 +13,6 @@ import (
 )
 
 func NewRouter(
-	cfg *config.Config,
 	authUsecase usecases.AuthUsecase,
 	healthcheckRouter *v1.HealthcheckRouter,
 	authRouter *v1.AuthRouter,
@@ -47,7 +46,7 @@ func NewRouter(
 
 	// CORSの設定
 	corsConfig := middleware.DefaultCORSConfig()
-	corsConfig.AllowOrigins = cfg.AllowedOrigins
+	corsConfig.AllowOrigins = config.Config.AllowedOrigins
 
 	// ミドルウェアの適用
 	handler := middleware.Chain(
@@ -56,7 +55,7 @@ func NewRouter(
 		middleware.CORS(corsConfig),
 		middleware.Logging(),
 		middleware.ErrorHandler(),
-		middleware.Timeout(cfg.RequestTimeout),
+		middleware.Timeout(config.Config.RequestTimeout),
 		middleware.Authenticate(authUsecase), // fix 面倒なので一旦OFF
 	)
 	return handler

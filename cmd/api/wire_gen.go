@@ -13,7 +13,6 @@ import (
 	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/adapters/secondary/piyographql"
 	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/core/usecases"
 	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/infrastructure/auth"
-	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/infrastructure/config"
 	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/infrastructure/logger"
 	"net/http"
 )
@@ -24,8 +23,8 @@ import (
 
 // Injectors from wire.go:
 
-func InitializeAPI(cfg *config.Config) (http.Handler, error) {
-	tokenService := auth.NewTokenService(cfg)
+func InitializeAPI() (http.Handler, error) {
+	tokenService := auth.NewTokenService()
 	authUsecase := usecases.NewAuthUsecase(tokenService)
 	loggerLogger := logger.NewLogger()
 	healthcheckHandler := handlers.NewHealthcheckHandler(loggerLogger)
@@ -40,6 +39,6 @@ func InitializeAPI(cfg *config.Config) (http.Handler, error) {
 	productRouter := v1.NewProductRouter(productHandler)
 	orderHandler := handlers.NewOrderHandler()
 	orderRouter := v1.NewOrderRouter(orderHandler)
-	handler := routes.NewRouter(cfg, authUsecase, healthcheckRouter, authRouter, userRouter, productRouter, orderRouter)
+	handler := routes.NewRouter(authUsecase, healthcheckRouter, authRouter, userRouter, productRouter, orderRouter)
 	return handler, nil
 }

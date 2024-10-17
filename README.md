@@ -1,8 +1,32 @@
 # go-rest-clean-plane-wire
 base project for go rest api
 
-## ライブラリの検討
-- wire を実装する
+## 使用ライブラリ
+- wire
+- viper
+- swag
+- gomock
+- todo: go-playground validator
+
+## 実装内容
+- 標準ライブラリでのルーディング
+- Middleware
+  - context value
+    - request id
+    - request info
+  - CORS
+  - logging
+  - エラーハンドリング（recover）
+  - タイムアウト
+  - 認証
+- カスタムロガー
+- wire ジェネレート
+- swagger定義のジェネレート
+- mock ジェネレート
+- CI
+  - lint
+  - test
+  - Dockerfile/docker-compose
 
 ### README に載せたい情報
 - swagger の使い方

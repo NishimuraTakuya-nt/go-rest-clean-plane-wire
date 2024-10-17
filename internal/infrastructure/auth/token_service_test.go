@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"context"
 	"testing"
 
 	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/mocks/mockauth"
@@ -29,7 +30,7 @@ func TestGenerateToken(t *testing.T) {
 			roles:  []string{"user", "admin"},
 			mockFunc: func() {
 				mockTokenService.EXPECT().
-					GenerateToken("user123", []string{"user", "admin"}).
+					GenerateToken(context.Background(), "user123", []string{"user", "admin"}).
 					Return("mocked.jwt.token", nil)
 			},
 			want:    "mocked.jwt.token",
@@ -41,7 +42,7 @@ func TestGenerateToken(t *testing.T) {
 			roles:  []string{"user"},
 			mockFunc: func() {
 				mockTokenService.EXPECT().
-					GenerateToken("user456", []string{"user"}).
+					GenerateToken(context.Background(), "user456", []string{"user"}).
 					Return("", jwt.ErrSignatureInvalid)
 			},
 			want:    "",
@@ -53,7 +54,7 @@ func TestGenerateToken(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			tc.mockFunc()
 
-			got, err := mockTokenService.GenerateToken(tc.userID, tc.roles)
+			got, err := mockTokenService.GenerateToken(context.Background(), tc.userID, tc.roles)
 
 			if tc.wantErr {
 				assert.Error(t, err)

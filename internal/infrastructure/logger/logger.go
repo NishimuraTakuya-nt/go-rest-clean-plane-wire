@@ -10,6 +10,7 @@ import (
 	"runtime"
 
 	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/core/common/contextkeys"
+	"github.com/NishimuraTakuya-nt/go-rest-clean-plane-wire/internal/infrastructure/config"
 )
 
 // Logger インターフェース
@@ -120,7 +121,7 @@ func (l *customLogger) With(args ...any) Logger {
 
 // getLevelFromEnv
 func getLevelFromEnv() slog.Level {
-	levelStr := os.Getenv("LOG_LEVEL")
+	levelStr := config.Config.LogLevel
 	switch levelStr {
 	case "DEBUG":
 		return slog.LevelDebug

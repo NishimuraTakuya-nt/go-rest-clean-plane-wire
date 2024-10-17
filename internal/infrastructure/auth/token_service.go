@@ -15,14 +15,10 @@ type TokenService interface {
 	ValidateToken(ctx context.Context, tokenString string) (*models.Claims, error)
 }
 
-type tokenService struct {
-	config *config.Config
-}
+type tokenService struct{}
 
-func NewTokenService(cfg *config.Config) TokenService {
-	return &tokenService{
-		config: cfg,
-	}
+func NewTokenService() TokenService {
+	return &tokenService{}
 }
 
 func (s *tokenService) GenerateToken(_ context.Context, userID string, roles []string) (string, error) {
@@ -37,12 +33,12 @@ func (s *tokenService) GenerateToken(_ context.Context, userID string, roles []s
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString([]byte(s.config.JWTSecretKey))
+	return token.SignedString([]byte(config.Config.JWTSecretKey))
 }
 
 func (s *tokenService) ValidateToken(_ context.Context, tokenString string) (*models.Claims, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &models.Claims{}, func(_ *jwt.Token) (any, error) {
-		return []byte(s.config.JWTSecretKey), nil
+		return []byte(config.Config.JWTSecretKey), nil
 	})
 
 	if err != nil {

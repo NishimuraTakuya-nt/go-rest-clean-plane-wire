@@ -32,15 +32,18 @@ func main() {
 
 func run() error {
 	log := logger.NewLogger()
-	cfg := config.Load()
+	if err := config.Config.Validate(); err != nil {
+		log.Error("config validation failed", slog.String("error", err.Error()))
+		panic(err)
+	}
 
-	router, err := InitializeAPI(cfg)
+	router, err := InitializeAPI()
 	if err != nil {
 		return err
 	}
 
 	srv := &http.Server{
-		Addr:    cfg.ServerAddress,
+		Addr:    config.Config.ServerAddress,
 		Handler: router,
 	}
 
@@ -50,7 +53,7 @@ func run() error {
 
 	// サーバーをゴルーチンで起動
 	go func() {
-		log.Info("Server started", slog.String("address", cfg.ServerAddress))
+		log.Info("Server started", slog.String("address", config.Config.ServerAddress))
 		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			log.Error("Server listen failed", slog.String("error", err.Error()))
 		}
